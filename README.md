@@ -77,7 +77,7 @@ Tescribe allows you to move away from manual Apex setup by "recording" perfect d
 Use **Salesforce Inspector** or a similar tool to copy an existing "perfect" record from your sandbox.
 
 ```javascript
-//Example JSON for a "Gold Partner" Account
+//Example JSON for a "Enterprise Client" Account
 {
     "Name": "Enterprise Client {alpha}",
     "Type": "Prospect",
