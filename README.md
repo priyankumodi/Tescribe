@@ -6,46 +6,6 @@
 
 It is designed to be a **scalable, modern replacement** for traditional test data factory classes that often become difficult to maintain as projects grow.
 
-<details>
-<summary>Click to expand Table of Contents</summary>
-
-## Table of Contents
-
-- [Tescribe: Fluent Test Data Generation for Salesforce Apex](#tescribe-fluent-test-data-generation-for-salesforce-apex)
-    - [Table of Contents](#table-of-contents)
-    - [1. What is Tescribe?](#1-what-is-tescribe)
-    - [2. The Problem: The "Factory Fatigue"](#2-the-problem-the-factory-fatigue)
-        - [The Traditional Approach](#the-traditional-approach)
-        - [The Tescribe Solution](#the-tescribe-solution)
-    - [3. Installation](#3-installation)
-    - [4. How to Use](#4-how-to-use)
-        - [Step 1: Choose Your Starting Point](#step-1-choose-your-starting-point)
-            - [How to Create a JSON Template](#how-to-create-a-json-template)
-                - [Step 1: Export or Write your JSON](#step-1-export-or-write-your-json)
-                - [Step 2: Create the Custom Metadata Record](#step-2-create-the-custom-metadata-record)
-        - [Step 2: Use Tokens for Dynamic Values](#step-2-use-tokens-for-dynamic-values)
-        - [Step 3: Targeted Customization](#step-3-targeted-customization)
-            - [A. Compile-Time Safety vs. Flexibility](#a-compile-time-safety-vs-flexibility)
-            - [B. Targeting Specific Rows (Selectors)](#b-targeting-specific-rows-selectors)
-            - [C. Multiple Values (`setFieldValues`)](#c-multiple-values-setfieldvalues)
-        - [Step 4: Finalize and Persist](#step-4-finalize-and-persist)
-        - [Full Example: Putting it all together](#full-example-putting-it-all-together)
-    - [5. Token Reference \& Performance](#5-token-reference--performance)
-        - [Token Reference Guide](#token-reference-guide)
-        - [💡 Advanced Token Usage](#-advanced-token-usage)
-    - [6. Performance \& Safety](#6-performance--safety)
-        - [Performance](#performance)
-        - [Safety \& Limitations](#safety--limitations)
-    - [7. Technical Inventory \& Security](#7-technical-inventory--security)
-        - [Package Components](#package-components)
-        - [Permissions \& Access Control](#permissions--access-control)
-    - [8. Closing Remarks \& Roadmap](#8-closing-remarks--roadmap)
-        - [The Artisan Philosophy](#the-artisan-philosophy)
-        - [Disclaimer \& Community Feedback](#disclaimer--community-feedback)
-        - [The Future of Tescribe](#the-future-of-tescribe)
-
-</details>
-
 ## 1. What is Tescribe?
 
 Tescribe moves beyond the limitations of static “Test Data Factories” by providing a dynamic engine that handles everything from simple single-record creation to complex, multi-object relationship trees. It bridges the gap between rigid code and dynamic test requirements.
@@ -84,11 +44,11 @@ Clone the repository and deploy the source directly to your Scratch Org or Sandb
 
 ```bash
 # 1. Clone the repository
-git  clone https://github.com/priyankumodi/Tescribe.git
-cd  Tescribe
+git clone https://github.com/priyankumodi/Tescribe.git
+cd Tescribe
 
 # 2. Deploy to your default org
-sf  project  deploy  start
+sf project deploy start
 ```
 
 ## 4. How to Use
@@ -99,13 +59,13 @@ Tescribe is built on a "Describe and Build" philosophy. Follow these steps to ge
 
 You can start with a blank slate using an `SObjectType` or bootstrap from a pre-defined template in `Tescribe_Template__mdt`.
 
-```java
+```apex
 // Option A: Starting from scratch
 Tescribe.builder(Account.SObjectType);
 
-// Option B: Starting from a Metadata Template (e.g., 'Gold_Partner')
+// Option B: Starting from a Metadata Template (e.g., 'Enterprise_Account_Template')
 // This loads all default field values and logic defined in your JSON template.
-Tescribe.builder('Gold_Partner');
+Tescribe.builder('Enterprise_Account_Template');
 ```
 
 #### How to Create a JSON Template
@@ -119,20 +79,24 @@ Use **Salesforce Inspector** or a similar tool to copy an existing "perfect" rec
 ```javascript
 //Example JSON for a "Gold Partner" Account
 {
-  "Name": "Standard Gold Partner {alpha}",
-  "Industry": "Technology",
-  "Type": "Partner",
-  "Rating": "Hot"
+    "Name": "Enterprise Client {alpha}",
+    "Type": "Prospect",
+    "Industry": "Technology",
+    "Description": "Record {counter} of {quantity}. Batch ID: {random} Index: {index}"
 }
 ```
 
 ##### Step 2: Create the Custom Metadata Record
 
+> **💡 Quick Start:** You can refer to the [Enterprise_Account_Template](force-app/main/default/customMetadata/Tescribe_Template.Enterprise_Account_Template.md-meta.xml) included in this repository to see a finished example of how the JSON and fields are mapped.
+
 1.  Navigate to **Setup** > **Custom Metadata Types**.
 2.  Find **Tescribe Template** (`Tescribe_Template__mdt`) and click **Manage Records**.
 3.  Create a **New** record:
-    - **Developer Name**: `Gold_Partner` (This must match the string used in your Apex builder).
+4.  - **Label**: `Enterprise Account`
+    - **Developer Name**: `Enterprise_Account_Template` (This must match the string used in your Apex builder).
     - **Object API Name**: `Account`.
+    - **Description**:`Standard template for Enterprise-level Accounts. Automatically generates unique names with alpha-sequencing and includes dynamic descriptions for easier test debugging.`
     - **JSON Data**: Paste your JSON here.
     - **Is Active**: Ensure this is checked.
 
@@ -142,7 +106,7 @@ Use **Salesforce Inspector** or a similar tool to copy an existing "perfect" rec
 
 Instead of hardcoding values or writing loops, use the **Token Engine** to ensure data uniqueness and realism.
 
-```java
+```apex
 .repeat(3)									 // Prepare 3 records
 .setFieldValue('Name', 'Acme {alpha}')       // Generates: Acme A, Acme B, Acme C
 .setFieldValue('Phone', '555-0{counter:1}')  // Generates: 555-01, 555-02, 555-03
@@ -157,7 +121,7 @@ Tescribe’s power lies in its precision. Use the following features to transiti
 
 Tescribe supports both **Strongly Typed Fields** (Recommended) and **String-based Names**. Lead with typed fields to catch errors during development.
 
-```java
+```apex
 // RECOMMENDED: Strongly typed (Catch errors at compile-time)
 .setFieldValue(Account.Industry, 'Technology')
 
@@ -169,7 +133,7 @@ Tescribe supports both **Strongly Typed Fields** (Recommended) and **String-base
 
 You don't need to write loops to differentiate records in a batch. Use **Selectors** to apply a single value to specific indices or ranges.
 
-```java
+```apex
 .repeat(10)
 // Apply to ALL 10 records
 .setFieldValue(Account.Type, 'Customer')
@@ -182,7 +146,7 @@ You don't need to write loops to differentiate records in a batch. Use **Selecto
 
 Use `setFieldValues` (plural) to map an ordered list of values to your records. This is the most efficient way to set up varied states or link multiple parent IDs.
 
-```java
+```apex
 // Ex. Mapping 3 specific IDs to 3 new records
 List<Id> parentIds = new List<Id>{id1, id2, id3};
 .repeat(3)
@@ -211,7 +175,7 @@ List<String> allStages = new List<String>{'Prospecting', 'Qualification', 'Revie
 
 Decide whether you need the records only in memory (for unit tests that don't require DML) or saved to the database.
 
-```java
+```apex
 // Option A: Build in memory (Returns List<SObject>)
 // Fast, saves on DML limits, great for logic-only tests.
 List<Account> accs = (List<Account>) builder.build();
@@ -225,7 +189,7 @@ List<Account> accs = (List<Account>) builder.save();
 
 In this real-world scenario, we are creating 5 Contacts. We use the **Token Engine** for unique names, **Strongly Typed Fields** for safety, and **Selectors** to differentiate a specific "VIP" record—all linked to a single Account.
 
-```java
+```apex
 List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
     .repeat(5) // 1. Prepare a batch of 5 records
     .setFieldValue(Contact.AccountId, myAccountId) // 2. Link all records to a specific Account
@@ -289,6 +253,7 @@ Tescribe is a lightweight solution consisting of the following elements:
 
 - **Apex Classes**: The core engine (`Tescribe.cls`) and its associated test suites (such as `TescribeTest.cls`).
 - **Custom Metadata**: `Tescribe_Template__mdt` used for storing your "Golden Record" JSON templates.
+- **Sample Record**: A pre-configured template (Enterprise_Account_Template) is included to help you get started. Note: This record is for demonstration only and can be safely deleted if not needed.
 - **Page Layouts**: Optimized layouts for the Custom Metadata to make JSON entry clean and manageable.
 - **Permission Sets**: Pre-configured access controls for developers and automated test users.
 
