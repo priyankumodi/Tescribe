@@ -1,26 +1,12 @@
 /**
  * ============================================================================
- * T E S C R I B E
- * The Artisan Data Scribe for Salesforce Apex
+ * T E S C R I B E - Fluent Test Data Generation for Salesforce Apex
  * ============================================================================
- * A fluent, high-performance data factory designed to "describe" test states
- * rather than just generate records. Built for speed, safety, and precision.
- * @author     Priyank Modi
- * @version    1.0.0
- * @license    MIT
- * * CORE FEATURES:
- * - High Performance: O(n) complexity optimized for Salesforce CPU limits.
- * - Smart Mapping: Automatic 1-to-1 parent-child linking.
- * - Token Engine: Advanced sequential, alphabetic, and padded formatting.
- * - Selectors: Target specific records or ranges for unique data shapes.
- * * TOKEN QUICK-REFERENCE:
- * {counter}          -> 1, 2, 3...
- * {counter:100}      -> 100, 101, 102...
- * {alpha}            -> A, B, C... Z, AA...
- * {alpha:E}          -> E, F, G...
- * {000:50}           -> 050, 051, 052... (Padded to 3 digits)
- * {index}            -> 0, 1, 2...
- * {random}           -> [GlobalSeq][4-Digit-Crypto]
+ * @author      Priyank Modi
+ * @version     1.0.0
+ * @license     MIT
+ * @repository  https://github.com/priyankumodi/Tescribe
+ * Documentation, Token Reference, & Guides: See README.md in the repo above.
  * ============================================================================
  */
 
