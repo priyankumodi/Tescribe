@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Description__c</fullName>
+    <description>Developer notes explaining the &quot;Persona&quot; or specific data state this template represents (e.g., &quot;Standard Enterprise Account with UK Billing Address&quot;).</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Provide a brief explanation of the data scenario this template represents. Helps other developers understand when to use this specific data shape.</inlineHelpText>
+    <label>Description</label>
+    <length>2000</length>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

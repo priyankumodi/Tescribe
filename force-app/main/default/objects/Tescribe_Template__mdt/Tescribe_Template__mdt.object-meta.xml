@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Central repository for test data prototypes used by the Tescribe library. Each record stores a JSON snapshot of a &apos;gold standard&apos; record, enabling data-driven unit tests without hard-coding large field sets in Apex.</description>
+    <label>Tescribe Template</label>
+    <pluralLabel>Tescribe Templates</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Object_API_Name__c</fullName>
+    <description>The API Name of the target SObject (e.g., Account, Opportunity). This is the &quot;Source of Truth&quot; used to instantiate the record in the Tescribe builder.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Enter the exact API Name of the Salesforce object (e.g., Account, Opportunity). This determines the type of record Tescribe will create.</inlineHelpText>
+    <label>Object API Name</label>
+    <length>100</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

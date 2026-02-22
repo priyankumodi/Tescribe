@@ -1,0 +1,20 @@
+# Exclude local IDE/System noise
+.sfdx/
+.sf/
+.vscode/
+node_modules/
+.husky/
+
+# Exclude Manifest (since you are now Source-Tracked)
+manifest/
+
+# Exclude everything EXCEPT your library assets if you want to be super strict
+# This prevents pulling accidental changes to the Scratch Org's standard settings
+**/profiles/**
+**/settings/**
+**/appMenus/**
+**/sharingRules/**
+
+# Keep your data folder out of the Salesforce deployment
+scripts/
+data/

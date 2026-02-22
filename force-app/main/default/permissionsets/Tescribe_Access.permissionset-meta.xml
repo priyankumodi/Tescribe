@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Tescribe Access</label>
+    <description>Grants access to Tescribe core classes and data templates.</description>
+    
+    <classAccesses>
+        <apexClass>Tescribe</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>TescribeTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+
+    <objectPermissions>
+        <allowRead>true</allowRead>
+        <object>Tescribe_Template__mdt</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Tescribe_Template__mdt.Description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Tescribe_Template__mdt.Is_Active__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Tescribe_Template__mdt.JSON_Data__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+</PermissionSet>

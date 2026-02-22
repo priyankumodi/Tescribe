@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>JSON_Data__c</fullName>
+    <description>A JSON-formatted map of field-value pairs used as the record prototype. Supports &quot;Salesforce Inspector&quot; export format or hand-written JSON.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Paste the JSON representation of the record here. This can be a &quot;Copy JSON&quot; export from Salesforce Inspector or a custom field-value map.</inlineHelpText>
+    <label>JSON Data</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>10</visibleLines>
+</CustomField>

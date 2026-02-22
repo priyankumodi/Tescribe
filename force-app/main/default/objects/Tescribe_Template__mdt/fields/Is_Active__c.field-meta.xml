@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Active__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>When unchecked, this template will be ignored by the Tescribe builder. Use this to retire old data shapes without deleting the metadata record.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>If unchecked, this template will be hidden from the Tescribe builder, preventing it from being used in active test executions.</inlineHelpText>
+    <label>Is Active</label>
+    <type>Checkbox</type>
+</CustomField>
