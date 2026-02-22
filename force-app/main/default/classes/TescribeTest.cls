@@ -1,6 +1,34 @@
 @IsTest
 private class TescribeTest {
     @IsTest
+    static void testMetadataBuilderWithMock() {
+        // 1. Define a mock metadata record in memory
+        Tescribe_Template__mdt mockMeta = new Tescribe_Template__mdt(
+            DeveloperName = 'Mock_Account',
+            Object_API_Name__c = 'Account',
+            JSON_Data__c = '{"Name": "Mock Account", "Industry": "Technology"}'
+        );
+
+        // 2. Inject it into the main class
+        Tescribe.mockTemplate = mockMeta;
+
+        // 3. Execute the builder
+        Test.startTest();
+        Tescribe instance = Tescribe.builder('Mock_Account');
+        List<Account> results = (List<Account>) instance.build();
+        Test.stopTest();
+
+        // 4. Verify coverage-driving logic
+        Assert.areNotEqual(null, instance, 'Instance should be created');
+        Assert.areEqual(1, results.size());
+        Assert.areEqual(
+            'Mock Account',
+            results[0].Name,
+            'JSON data should be parsed into the SObject'
+        );
+    }
+
+    @IsTest
     static void testStandardBuilderAndTokens() {
         // Test basic building with various tokens
         List<Account> accs = (List<Account>) Tescribe.builder(Account.SObjectType)
@@ -110,5 +138,85 @@ private class TescribeTest {
 
         Assert.areEqual(parents[0].Id, children[0].AccountId, 'Index 0 should link to Parent 0');
         Assert.areEqual(parents[1].Id, children[1].AccountId, 'Index 1 should link to Parent 1');
+    }
+
+    @IsTest
+    static void testTokenEdgeCaseCoverage() {
+        // 1. Define mock to hit the builder logic again (safety)
+        Tescribe.mockTemplate = new Tescribe_Template__mdt(
+            DeveloperName = 'Token_Edge_Case',
+            Object_API_Name__c = 'Account',
+            JSON_Data__c = '{"Name": "Base"}'
+        );
+
+        // 2. Build with tokens that trigger all default and specific branches
+        Test.startTest();
+        List<Account> accs = (List<Account>) Tescribe.builder('Token_Edge_Case')
+            .repeat(1)
+            // Hits Line 238 (non-string)
+            .setFieldValue('NumberOfEmployees', 100)
+            // Hits Lines 247, 254, 263 (default offsets for tokens)
+            .setFieldValue('Description', 'C:{counter} A:{alpha} P:{000}')
+            // Hits Line 267 ({index})
+            .setFieldValue('Site', 'Index-{index}')
+            // Hits Line 271 ({random})
+            .setFieldValue('TickerSymbol', '{random}')
+            .build();
+        Test.stopTest();
+
+        // 3. Verify specific outputs to ensure logic was actually processed
+        Assert.areEqual(100, accs[0].NumberOfEmployees, 'Integer values should pass through');
+        Assert.areEqual(
+            'C:1 A:A P:001',
+            accs[0].Description,
+            'Default tokens should use start values'
+        );
+        Assert.areEqual('Index-0', accs[0].Site, 'Index token should be 0');
+        Assert.isTrue(accs[0].TickerSymbol.length() >= 4, 'Random token should be generated');
+    }
+
+    @IsTest
+    static void testFinalCoverageGaps() {
+        // 1. Cover the 'Invalid Object' exception branch (Lines 105-108)
+        Tescribe.mockTemplate = new Tescribe_Template__mdt(
+            DeveloperName = 'Invalid_Obj',
+            Object_API_Name__c = 'Invalid_Object_Name_X',
+            JSON_Data__c = '{"Name": "Test"}'
+        );
+
+        try {
+            Tescribe.builder('Invalid_Obj');
+        } catch (IllegalArgumentException e) {
+            Assert.isTrue(
+                e.getMessage().contains('Invalid Object'),
+                'Should hit invalid object branch'
+            );
+        }
+
+        // 2. Cover Token defaults, non-string values, and basic FieldRules
+        Tescribe.mockTemplate = new Tescribe_Template__mdt(
+            DeveloperName = 'Token_Gap_Filler',
+            Object_API_Name__c = 'Account',
+            JSON_Data__c = '{"Name": "Base"}'
+        );
+
+        Test.startTest();
+        List<Account> accs = (List<Account>) Tescribe.builder('Token_Gap_Filler')
+            .repeat(1)
+            // Hits Line 56 (Rule with no selectors)
+            .setFieldValue('Description', 'Standard Rule')
+            // Hits Line 238 (non-string value)
+            .setFieldValue('NumberOfEmployees', 100)
+            // Hits Lines 247, 254, 263 (default offsets)
+            .setFieldValue('Site', '{counter} {alpha} {000}')
+            // Hits Lines 267, 271 ({index} and {random})
+            .setFieldValue('TickerSymbol', '{index}-{random}')
+            .build();
+        Test.stopTest();
+
+        // Verification
+        Assert.areEqual(100, accs[0].NumberOfEmployees, 'Integer should pass through');
+        Assert.isTrue(accs[0].Site.contains('1 A 001'), 'Defaults should be 1, A, and 001');
+        Assert.isTrue(accs[0].TickerSymbol.contains('0-'), 'Index should be 0');
     }
 }

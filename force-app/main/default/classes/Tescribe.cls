@@ -27,6 +27,10 @@
 public class Tescribe {
     private static Integer globalSequence = 0;
 
+    // Mock variable for 100% test coverage
+    @TestVisible
+    private static Tescribe_Template__mdt mockTemplate;
+
     private final SObjectType targetType;
     private Integer quantity = 1;
     private final List<FieldRule> rules = new List<FieldRule>();
@@ -73,29 +77,37 @@ public class Tescribe {
     /**
      * Metadata Entry Point
      * Optimized: Uses single SOQL and bulk field mapping
+     * Updated with "Smart Mock" logic to improve code coverage.
      */
     public static Tescribe builder(String templateName) {
-        // Governor Check: Single selective SOQL
-        List<Tescribe_Template__mdt> templates = [
-            SELECT JSON_Data__c, Object_API_Name__c
-            FROM Tescribe_Template__mdt
-            WHERE DeveloperName = :templateName AND Is_Active__c = TRUE
-            LIMIT 1
-        ];
+        Tescribe_Template__mdt meta;
 
-        if (templates.isEmpty()) {
-            throw new IllegalArgumentException(
-                'Tescribe: Active template not found: ' + templateName
-            );
+        // 2. Check for mock first to drive 100% test coverage
+        if (Test.isRunningTest() && mockTemplate != null) {
+            meta = mockTemplate;
+        } else {
+            List<Tescribe_Template__mdt> templates = [
+                SELECT JSON_Data__c, Object_API_Name__c
+                FROM Tescribe_Template__mdt
+                WHERE DeveloperName = :templateName AND Is_Active__c = TRUE
+                LIMIT 1
+            ];
+
+            if (templates.isEmpty()) {
+                throw new IllegalArgumentException(
+                    'Tescribe: Active template not found: ' + templateName
+                );
+            }
+            meta = templates[0];
         }
 
-        Tescribe_Template__mdt meta = templates[0];
         SObjectType t = Schema.getGlobalDescribe().get(meta.Object_API_Name__c);
 
-        if (t == null)
+        if (t == null) {
             throw new IllegalArgumentException(
                 'Tescribe: Invalid Object: ' + meta.Object_API_Name__c
             );
+        }
 
         Tescribe instance = new Tescribe(t);
 
@@ -108,7 +120,6 @@ public class Tescribe {
             for (String key : rawData.keySet()) {
                 if (fieldMap.containsKey(key)) {
                     DescribeFieldResult d = fieldMap.get(key).getDescribe();
-                    // Performance & Safety: Filter out system/formula fields early
                     if (d.isCreateable() && !d.isCalculated()) {
                         instance.setFieldValue(key, rawData.get(key));
                     }
