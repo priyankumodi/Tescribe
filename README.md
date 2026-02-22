@@ -59,7 +59,7 @@ Tescribe is built on a "Describe and Build" philosophy. Follow these steps to ge
 
 You can start with a blank slate using an `SObjectType` or bootstrap from a pre-defined template in `Tescribe_Template__mdt`.
 
-```apex
+```java
 // Option A: Starting from scratch
 Tescribe.builder(Account.SObjectType);
 
@@ -106,7 +106,7 @@ Use **Salesforce Inspector** or a similar tool to copy an existing "perfect" rec
 
 Instead of hardcoding values or writing loops, use the **Token Engine** to ensure data uniqueness and realism.
 
-```apex
+```java
 .repeat(3)									 // Prepare 3 records
 .setFieldValue('Name', 'Acme {alpha}')       // Generates: Acme A, Acme B, Acme C
 .setFieldValue('Phone', '555-0{counter:1}')  // Generates: 555-01, 555-02, 555-03
@@ -121,7 +121,7 @@ Tescribe’s power lies in its precision. Use the following features to transiti
 
 Tescribe supports both **Strongly Typed Fields** (Recommended) and **String-based Names**. Lead with typed fields to catch errors during development.
 
-```apex
+```java
 // RECOMMENDED: Strongly typed (Catch errors at compile-time)
 .setFieldValue(Account.Industry, 'Technology')
 
@@ -133,8 +133,10 @@ Tescribe supports both **Strongly Typed Fields** (Recommended) and **String-base
 
 You don't need to write loops to differentiate records in a batch. Use **Selectors** to apply a single value to specific indices or ranges.
 
-```apex
+```java
+// Prepare 10 records
 .repeat(10)
+
 // Apply to ALL 10 records
 .setFieldValue(Account.Type, 'Customer')
 
@@ -142,11 +144,15 @@ You don't need to write loops to differentiate records in a batch. Use **Selecto
 .setFieldValue(Account.Type, 'Partner', new List<String>{ '0', '5-8' })
 ```
 
+> ### 💡 Pro-Tip: The "Artisan" Approach
+>
+> Mixing these features allows for incredible precision. You can define a "base" state for 100 records using a **Strongly Typed Field** in one line, then "carve out" specific exceptions for a handful of them using a **Selector** in the next. This layer-by-layer approach makes your test data expressive and easy to maintain.
+
 #### C. Multiple Values (`setFieldValues`)
 
 Use `setFieldValues` (plural) to map an ordered list of values to your records. This is the most efficient way to set up varied states or link multiple parent IDs.
 
-```apex
+```java
 // Ex. Mapping 3 specific IDs to 3 new records
 List<Id> parentIds = new List<Id>{id1, id2, id3};
 .repeat(3)
@@ -157,12 +163,6 @@ List<String> allStages = new List<String>{'Prospecting', 'Qualification', 'Revie
 .repeat(4)
 .setFieldValues(Opportunity.StageName, allStages)
 ```
-
-> ### 💡 Pro-Tip: The "Artisan" Approach
->
-> Mixing these features allows for incredible precision. You can define a "base" state for 100 records using a **Strongly Typed Field** in one line, then "carve out" specific exceptions for a handful of them using a **Selector** in the next. This layer-by-layer approach makes your test data expressive and easy to maintain.
-
----
 
 > ### ⚠️ Important: Understanding `setFieldValues` (Lists)
 >
@@ -175,7 +175,7 @@ List<String> allStages = new List<String>{'Prospecting', 'Qualification', 'Revie
 
 Decide whether you need the records only in memory (for unit tests that don't require DML) or saved to the database.
 
-```apex
+```java
 // Option A: Build in memory (Returns List<SObject>)
 // Fast, saves on DML limits, great for logic-only tests.
 List<Account> accs = (List<Account>) builder.build();
@@ -189,14 +189,14 @@ List<Account> accs = (List<Account>) builder.save();
 
 In this real-world scenario, we are creating 5 Contacts. We use the **Token Engine** for unique names, **Strongly Typed Fields** for safety, and **Selectors** to differentiate a specific "VIP" record—all linked to a single Account.
 
-```apex
+```java
 List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
-    .repeat(5) // 1. Prepare a batch of 5 records
-    .setFieldValue(Contact.AccountId, myAccountId) // 2. Link all records to a specific Account
-    .setFieldValue(Contact.LastName, 'User {counter}') // 3. Dynamic naming: User 1, User 2, etc.
-    .setFieldValue(Contact.Level__c, 'Primary') // 4. Set 'Primary' as the default for all
-    .setFieldValue(Contact.Level__c, 'Secondary', '0') // 5. Override ONLY the first record (Index 0)
-    .save(); // 6. Insert to Database and return the list
+    .repeat(5)                                          // 1. Prepare a batch of 5 records
+    .setFieldValue(Contact.AccountId, myAccountId)      // 2. Link all records to a specific Account
+    .setFieldValue(Contact.LastName, 'User {counter}')  // 3. Dynamic naming: User 1, User 2, etc.
+    .setFieldValue(Contact.Level__c, 'Primary')         // 4. Set 'Primary' as the default for all
+    .setFieldValue(Contact.Level__c, 'Secondary', '0')  // 5. Override ONLY the first record (Index 0)
+    .save();                                            // 6. Insert to Database and return the list
 ```
 
 ## 5. Token Reference & Performance
@@ -205,14 +205,14 @@ List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
 
 Tescribe’s built-in **Token Engine** allows you to generate unique, sequential, or random data without writing manual loops or counter variables. Use these tokens within any string field value to create dynamic test states.
 
-| Token           | Description                                           | Example Output         |
-| :-------------- | :---------------------------------------------------- | :--------------------- |
-| `{index}`       | The current loop index, starting at 0.                | `0`, `1`, `2`          |
-| `{counter}`     | Simple incrementing numbers starting at 1.            | `1`, `2`, `3`          |
-| `{counter:100}` | Incrementing numbers starting at a specific value.    | `100`, `101`, `102`    |
-| `{000:1}`       | Padded numbers (3 digits) starting at 1.              | `001`, `002`, `003`    |
-| `{alpha}`       | Alphabetic sequencing (A-Z, then AA-ZZ).              | `A`, `B` ... `Z`, `AA` |
-| `{random}`      | A unique identifier (Sequence + 4-digit crypto hash). | `1-8A2F`, `2-9B1C`     |
+| Token           | Description                                                               | Example Output                   |
+| :-------------- | :------------------------------------------------------------------------ | :------------------------------- |
+| `{index}`       | The current loop index, starting at 0.                                    | `0`, `1`, `2`                    |
+| `{counter}`     | Simple incrementing numbers starting at 1.                                | `1`, `2`, `3`                    |
+| `{counter:100}` | Incrementing numbers starting at a specific value.                        | `100`, `101`, `102`              |
+| `{0...:start}`  | Variable Padded Numbers. The number of zeros determines the total length. | `{0000:1}` `→` `0001`, `0002...` |
+| `{alpha}`       | Alphabetic sequencing (A-Z, then AA-ZZ).                                  | `A`, `B` ... `Z`, `AA`           |
+| `{random}`      | A unique identifier (Sequence + 4-digit crypto hash).                     | `1-8A2F`, `2-9B1C`               |
 
 ---
 
@@ -279,11 +279,9 @@ Tescribe was born out of a desire to solve the very real "Factory Fatigue" that 
 
 While we have strived for perfection and high stability, software is an evolving craft.
 
-- **Use at your own risk**: As with any open-source utility, please validate Tescribe in your sandbox environments before integrating it into critical CI/CD pipelines[cite: 37].
+- **Use at your own risk**: As with any open-source utility, please validate Tescribe in your sandbox environments before integrating it into critical CI/CD pipelines.
 - **Discovered an edge case?**: We acknowledge there may be imperfections. If you find a bug or a unique data shape that Tescribe can't handle yet, we want to hear about it.
 - **Share your thoughts**: Your feedback is the fuel for this project. If Tescribe has saved you time or simplified your codebase, please let us know.
-
-### The Future of Tescribe
 
 We are just getting started. If there is significant community interest, we have many plans including publishing to AppExchange.
 
