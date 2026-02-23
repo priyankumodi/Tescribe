@@ -29,6 +29,34 @@ In standard Salesforce development, teams typically build `TestDataFactory.cls` 
 - **Redundancy**: To avoid changing existing methods, developers often create "overload" versions (e.g., `createAccountV2`, `createAccountV3`), leading to a cluttered and confusing API.
 - **Performance Heavy**: Traditional factories often lead to redundant SOQL/DML and high CPU usage.
 
+❌ Before: The "Factory Fatigue" Approach
+
+In a traditional setup, you are often forced to use rigid methods with a "parameter explosion" or write complex manual loops to handle unique data.
+
+```java
+// Traditional TestDataFactory.cls
+public class TestDataFactory {
+    // Rigid method signature: requires a value for every parameter even if not needed
+    public static List<Contact> createContacts(Integer count, Id accountId, String lastName, String level, Boolean isVIP) {
+        List<Contact> contacts = new List<Contact>();
+        for(Integer i=0; i < count; i++) {
+            Contact c = new Contact(
+                AccountId = accountId,
+                LastName = lastName + i, // Manual counter logic
+                Level__c = (isVIP && i < 3) ? 'Secondary' : level // Hard-coded conditional logic
+            );
+            contacts.add(c);
+        }
+        insert contacts;
+        return contacts;
+    }
+}
+
+// Usage in Test Class:
+// Difficult to read: What does the 'false' at the end represent?
+List<Contact> contacts = TestDataFactory.createContacts(10, myAccId, 'User', 'Primary', false);
+```
+
 ### The Tescribe Solution
 
 Tescribe significantly eliminates this pain by shifting the focus from **generating records** to **describing states**.
@@ -37,6 +65,21 @@ Tescribe significantly eliminates this pain by shifting the focus from **generat
 - **Template Driven**: Store "Golden Record" setups in Custom Metadata and load them with one line. Creating templates is effortless—simply export existing data as JSON using tools like **Salesforce Inspector** and paste it into the metadata, or write your own JSON from scratch.
 - **Precision Targeting**: Use "Selectors" to modify specific records within a batch without complex manual loops or huge parameter lists.
 - **Enhanced Readability**: Test setups become self-documenting. Instead of guessing what the 14th parameter in a factory method does, you see a clear, fluent chain of `setFieldValue` calls that describe exactly what the data looks like.
+
+✅ After: The Tescribe "Artisan" Approach
+
+Tescribe replaces rigid methods with a fluent API that describes the state. It handles the loops, the unique naming (Tokens), and the targeted overrides (Selectors) for you.
+
+```java
+// No separate factory class needed. Just describe the state:
+List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
+    .repeat(10)                                          // 1. Define volume
+    .setFieldValue(Contact.AccountId, myAccountId)       // 2. Map relationships
+    .setFieldValue(Contact.LastName, 'User {alpha}')     // 3. Dynamic naming (User A, User B...)
+    .setFieldValue(Contact.Level__c, 'Primary')          // 4. Set global default
+    .setFieldValue(Contact.Level__c, 'Secondary', '0-2') // 5. Precision targeting (indices 0, 1, 2)
+    .save();                                             // 6. Bulkified DML
+```
 
 ## 3. Installation
 
