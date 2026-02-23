@@ -1,12 +1,20 @@
 {
-  "packageDirectories": [
-    {
-      "path": "force-app",
-      "default": true
+    "packageDirectories": [
+        {
+            "versionName": "Tescribe Stable Build (02.23.2026)",
+            "versionNumber": "0.1.0.NEXT",
+            "path": "force-app",
+            "default": true,
+            "package": "Tescribe",
+            "versionDescription": "Fluent, high-performance data generation engine for Apex. Replaces rigid factories with descriptive, token-based state orchestration."
+        }
+    ],
+    "name": "Tescribe",
+    "namespace": "",
+    "sfdcLoginUrl": "https://login.salesforce.com",
+    "sourceApiVersion": "65.0",
+    "packageAliases": {
+        "Tescribe": "0HoHu000000H1VwKAK",
+        "Tescribe@0.1.0-1": "04tHu000004Fzo5IAC"
     }
-  ],
-  "name": "Tescribe",
-  "namespace": "",
-  "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "65.0"
 }
