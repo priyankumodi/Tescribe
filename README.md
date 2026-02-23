@@ -94,6 +94,8 @@ cd Tescribe
 sf project deploy start
 ```
 
+> **✅ Quick Start Verification**: After deployment, run the [TescribeSuite](force-app/main/default/testSuites/TescribeSuite.testSuite-meta.xml) Apex Test Suite to ensure the engine and modular test classes are fully compatible with your environment's specific object configurations and governor limits.
+
 ## 4. How to Use
 
 Tescribe is built on a "Describe and Build" philosophy. Follow these steps to generate exactly the data you need.
@@ -304,9 +306,13 @@ Before you begin, ensure you are familiar with the components included in the Te
 
 Tescribe is a lightweight solution consisting of the following elements:
 
-- **Apex Classes**: The core engine (`Tescribe.cls`) and its associated test suites (such as `TescribeTest.cls`).
+- **Apex Classes**:
+    - **The Engine (`Tescribe.cls`)**: The core fluent API and token processing logic.
+    - **Modular Test Suite**: Specialized test classes—`TescribeBuilderTest.cls`, `TescribeTokenTest.cls`, `TescribeAssignmentTest.cls`, and `TescribePersistenceTest.cls`—ensuring high-speed, isolated validation.
+- **Apex Test Suite**: `TescribeSuite.testSuite-meta.xml` groups all modular tests for single-click regression testing.
 - **Custom Metadata**: `Tescribe_Template__mdt` used for storing your "Golden Record" JSON templates.
-- **Sample Record**: A pre-configured template (Enterprise_Account_Template) is included to help you get started. Note: This record is for demonstration only and can be safely deleted if not needed.
+- **Sample Record**: A pre-configured template (`Enterprise_Account_Template`) is included to help you get started.
+    - _Note: This record is for demonstration only and can be safely deleted if not needed._
 - **Page Layouts**: Optimized layouts for the Custom Metadata to make JSON entry clean and manageable.
 - **Permission Sets**: Pre-configured access controls for developers and automated test users.
 
