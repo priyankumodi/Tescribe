@@ -196,13 +196,22 @@ You don't need to write loops to differentiate records in a batch. Use **Selecto
 Use `setFieldValues` (plural) to map an ordered list of values to your records. This is the most efficient way to set up varied states or link multiple parent IDs.
 
 ```java
-// Ex. Mapping 3 specific IDs to 3 new records
+// Ex 1. Mapping 3 specific IDs to 3 new records
 List<Id> parentIds = new List<Id>{id1, id2, id3};
+//...
 .repeat(3)
 .setFieldValues('ParentId', parentIds)
 
-// Ex. Mapping 4 different Stages to 4 Opportunities
+//Ex 2. Smart Mapping: Passing a List<SObject> directly
+// Tescribe automatically extracts the .Id from each record in the list.
+List<Account> accounts = [SELECT Id FROM Account LIMIT 3];
+//...
+.repeat(3)
+.setFieldValues(Contact.AccountId, accounts)
+
+// Ex 3. Mapping 4 different Stages to 4 Opportunities or any List<String>
 List<String> allStages = new List<String>{'Prospecting', 'Qualification', 'Review', 'Closed Won'};
+//...
 .repeat(4)
 .setFieldValues(Opportunity.StageName, allStages)
 ```
@@ -213,6 +222,7 @@ List<String> allStages = new List<String>{'Prospecting', 'Qualification', 'Revie
 >
 > - **Balanced Mapping**: If the number of records equals the number of values, every record receives a unique value from your list in sequential order.
 > - **Graceful Nulls**: If you have more records than values (e.g., using `.repeat(10)` with only 3 IDs), the additional records will have this field set to `null`. This ensures your data remains predictable and avoids accidental data duplication.
+> - **Smart Mapping (SObjects)**: When you pass a List<SObject>, Tescribe automatically extracts the Id field for you. There is no need to manually loop through the list to build a List<Id>
 
 ### Step 4: Finalize and Persist
 

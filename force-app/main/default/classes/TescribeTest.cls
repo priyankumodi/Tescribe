@@ -77,6 +77,22 @@ private class TescribeTest {
     }
 
     @IsTest
+    static void testStringFieldWithSObjectList() {
+        List<Account> parents = new List<Account>{ new Account(Id = '001000000000001AAA') };
+
+        // Using a String field name with a List<SObject>
+        List<Contact> children = (List<Contact>) Tescribe.builder(Contact.SObjectType)
+            .setFieldValues('AccountId', parents)
+            .build();
+
+        Assert.areEqual(
+            parents[0].Id,
+            children[0].AccountId,
+            'Should extract Id using String field name'
+        );
+    }
+
+    @IsTest
     static void testMetadataException() {
         // Test the error handling when a template doesn't exist
         Boolean exceptionThrown = false;

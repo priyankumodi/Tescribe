@@ -159,6 +159,16 @@ public class Tescribe {
         return setFieldValues(String.valueOf(field), ids);
     }
 
+    public Tescribe setFieldValues(String fieldName, List<SObject> records) {
+        List<Object> ids = new List<Object>();
+        if (records != null) {
+            for (SObject so : records) {
+                ids.add(so.Id);
+            }
+        }
+        return setFieldValues(fieldName, ids);
+    }
+
     public Tescribe setFieldValues(String fieldName, List<Object> values) {
         FieldRule rule = new FieldRule();
         rule.field = fieldName;
