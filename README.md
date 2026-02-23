@@ -83,7 +83,20 @@ List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
 
 ## 3. Installation
 
-Clone the repository and deploy the source directly to your Scratch Org or Sandbox using the Salesforce CLI.
+Choose the method that best fits your workflow.
+
+### Option A: Managed Package (Recommended)
+
+Install the versioned, pre-compiled bundle. This is the fastest way to add Tescribe to any Org (Sandbox, Developer, or Production).
+
+```bash
+# Install the latest stable version (v0.1.0)
+sf package install --package 04tHu000004Fzo5IAC --wait 10
+```
+
+### Option B: Source Installation (For Contributors)
+
+Clone the repository to modify the engine or integrate it directly into your CI/CD pipeline.
 
 ```bash
 # 1. Clone the repository
@@ -94,7 +107,20 @@ cd Tescribe
 sf project deploy start
 ```
 
-> **✅ Quick Start Verification**: After deployment, run the [TescribeSuite](force-app/main/default/testSuites/TescribeSuite.testSuite-meta.xml) Apex Test Suite to ensure the engine and modular test classes are fully compatible with your environment's specific object configurations and governor limits.
+🔐 Post-Installation: Assign Permissions
+
+Regardless of the method chosen, assign the Tescribe Access permission set to your user to enable the engine:
+
+```Bash
+sf org assign permset --name Tescribe_Access
+```
+
+> ✅ Quick Start Verification: After deployment and permission assignment, run the TescribeSuite Apex Test Suite to ensure the engine and modular test classes are fully compatible with your environment's specific object configurations and governor limits.
+
+```bash
+# Run tests in your target org
+sf apex run test --test-suite TescribeSuite --result-format human --wait 10 --target-org MyTargetOrg
+```
 
 ## 4. How to Use
 
