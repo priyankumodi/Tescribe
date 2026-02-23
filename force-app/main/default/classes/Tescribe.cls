@@ -124,6 +124,10 @@ public class Tescribe {
         return setFieldValue(String.valueOf(field), value, new List<String>());
     }
 
+    public Tescribe setFieldValue(Schema.SObjectField field, Object value, List<String> selectors) {
+        return setFieldValue(String.valueOf(field), value, selectors);
+    }
+
     public Tescribe setFieldValue(String fieldName, Object value) {
         return setFieldValue(fieldName, value, new List<String>());
     }
@@ -132,20 +136,24 @@ public class Tescribe {
         FieldRule rule = new FieldRule();
         rule.field = fieldName;
         rule.value = value;
-        // Optimization: Parse selectors once during configuration, not during build
-        for (String s : selectors) {
-            if (s.contains('-')) {
-                List<String> parts = s.split('-');
-                rule.ranges.add(
-                    new IntegerRange(
-                        Integer.valueOf(parts[0].trim()),
-                        Integer.valueOf(parts[1].trim())
-                    )
-                );
-            } else {
-                rule.specificIndices.add(Integer.valueOf(s.trim()));
+
+        // FIX: Add null check before iterating to avoid NullPointerException
+        if (selectors != null) {
+            for (String s : selectors) {
+                if (s.contains('-')) {
+                    List<String> parts = s.split('-');
+                    rule.ranges.add(
+                        new IntegerRange(
+                            Integer.valueOf(parts[0].trim()),
+                            Integer.valueOf(parts[1].trim())
+                        )
+                    );
+                } else {
+                    rule.specificIndices.add(Integer.valueOf(s.trim()));
+                }
             }
         }
+
         rules.add(rule);
         return this;
     }
@@ -157,6 +165,10 @@ public class Tescribe {
                 ids.add(so.Id);
         }
         return setFieldValues(String.valueOf(field), ids);
+    }
+
+    public Tescribe setFieldValues(Schema.SObjectField field, List<Object> values) {
+        return setFieldValues(String.valueOf(field), values);
     }
 
     public Tescribe setFieldValues(String fieldName, List<SObject> records) {
