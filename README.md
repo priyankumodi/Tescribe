@@ -81,6 +81,12 @@ List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
     .save();                                             // 6. Bulkified DML
 ```
 
+---
+
+#### 📖 Hungry for more?
+
+Check out the [**Tescribe Cookbook (SAMPLES.md)**](./SAMPLES.md) for a deep dive into advanced tokens, precision targeting, and metadata templates.
+
 ## 3. Installation
 
 Choose the method that best fits your workflow.
@@ -279,6 +285,10 @@ List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
     .setFieldValue(Contact.Level__c, 'Secondary', '0')  // 5. Override ONLY the first record (Index 0)
     .save();                                            // 6. Insert to Database and return the list
 ```
+
+#### 📖 Looking for more samples?
+
+Check out more samples here at [**Tescribe Cookbook (SAMPLES.md)**](./SAMPLES.md)
 
 ## 5. Token Reference & Performance
 
