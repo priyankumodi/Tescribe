@@ -296,14 +296,19 @@ Check out more samples here at [**Tescribe Cookbook (SAMPLES.md)**](./SAMPLES.md
 
 Tescribe’s built-in **Token Engine** allows you to generate unique, sequential, or random data without writing manual loops or counter variables. Use these tokens within any string field value to create dynamic test states.
 
-| Token           | Description                                                               | Example Output                   |
-| :-------------- | :------------------------------------------------------------------------ | :------------------------------- |
-| `{index}`       | The current loop index, starting at 0.                                    | `0`, `1`, `2`                    |
-| `{counter}`     | Simple incrementing numbers starting at 1.                                | `1`, `2`, `3`                    |
-| `{counter:100}` | Incrementing numbers starting at a specific value.                        | `100`, `101`, `102`              |
-| `{0...:start}`  | Variable Padded Numbers. The number of zeros determines the total length. | `{0000:1}` `→` `0001`, `0002...` |
-| `{alpha}`       | Alphabetic sequencing (A-Z, then AA-ZZ).                                  | `A`, `B` ... `Z`, `AA`           |
-| `{random}`      | A unique identifier (Sequence + 4-digit crypto hash).                     | `1-8A2F`, `2-9B1C`               |
+| Token           | Description                                                        | Example Output           |
+| :-------------- | :----------------------------------------------------------------- | :----------------------- |
+| `{index}`       | The current loop index, starting at 0.                             | `0`, `1`, `2`            |
+| `{counter}`     | Simple incrementing numbers starting at 1.                         | `1`, `2`, `3`            |
+| `{counter:100}` | Incrementing numbers starting at a specific value.                 | `100`, `101`, `102`      |
+| `{0...:start}`  | Padded Numbers. The number of zeros determines the padding length. | `{000:1}` → `001`, `002` |
+| `{alpha}`       | Alphabetic sequencing (A, B... Z, AA).                             | `A`, `B` ... `AA`        |
+| `{alpha:D}`     | Alphabetic sequencing starting from a specific letter.             | `D`, `E`, `F`            |
+| `{random}`      | A unique identifier (Global Sequence + 4-character crypto hash).   | `1482`, `2093`           |
+
+> ### ⚠️ Important: Case Sensitivity
+>
+> Token keywords are case-sensitive. For example, {alpha} will be processed, but {Alpha} or {ALPHA} will be ignored by the engine. However, the starting character in an alpha offset (e.g., {alpha:d}) is automatically normalized to uppercase by the library.
 
 ---
 
@@ -314,8 +319,8 @@ Tescribe’s built-in **Token Engine** allows you to generate unique, sequential
 You can combine tokens with static text to create complex, realistic data patterns:
 
 - **Unique Emails**: `testuser.{counter}@example.com` → `testuser.1@example.com`
-- **Reference Numbers**: `INV-{0000:10}-{alpha}` → `INV-0010-A`, `INV-0011-B`
-- **External IDs**: `EXT-{random}` → `EXT-1-A2F3`
+- **Reference Numbers**: `INV-{000:10}-{alpha:C}` → `INV-0010-C`, `INV-0011-D`
+- **External IDs**: `EXT-{random}` → `EXT-1428`
 
 ## 6. Performance & Safety
 
