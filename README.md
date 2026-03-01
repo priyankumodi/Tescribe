@@ -73,12 +73,18 @@ Tescribe replaces rigid methods with a fluent API that describes the state. It h
 ```java
 // No separate factory class needed. Just describe the state:
 List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
-    .repeat(10)                                          // 1. Define volume
-    .setFieldValue(Contact.AccountId, myAccountId)       // 2. Map relationships
-    .setFieldValue(Contact.LastName, 'User {alpha}')     // 3. Dynamic naming (User A, User B...)
-    .setFieldValue(Contact.Level__c, 'Primary')          // 4. Set global default
-    .setFieldValue(Contact.Level__c, 'Secondary', '0-2') // 5. Precision targeting (indices 0, 1, 2)
-    .save();                                             // 6. Bulkified DML
+    // 1. Define volume
+    .repeat(10)
+    // 2. Map relationships
+    .setFieldValue(Contact.AccountId, myAccountId)
+    // 3. Dynamic naming (User A, User B...)
+    .setFieldValue(Contact.LastName, 'User {alpha}')
+    // 4. Set global default
+    .setFieldValue(Contact.Level__c, 'Primary')
+    // 5. Precision targeting (indices 0, 1, 2)
+    .setFieldValue(Contact.Level__c, 'Secondary', new List<String>{ '0-2' })
+    // 6. Bulkified DML
+    .save();
 ```
 
 ---
@@ -278,12 +284,18 @@ In this real-world scenario, we are creating 5 Contacts. We use the **Token Engi
 
 ```java
 List<Contact> contacts = (List<Contact>) Tescribe.builder(Contact.SObjectType)
-    .repeat(5)                                          // 1. Prepare a batch of 5 records
-    .setFieldValue(Contact.AccountId, myAccountId)      // 2. Link all records to a specific Account
-    .setFieldValue(Contact.LastName, 'User {counter}')  // 3. Dynamic naming: User 1, User 2, etc.
-    .setFieldValue(Contact.Level__c, 'Primary')         // 4. Set 'Primary' as the default for all
-    .setFieldValue(Contact.Level__c, 'Secondary', '0')  // 5. Override ONLY the first record (Index 0)
-    .save();                                            // 6. Insert to Database and return the list
+    // 1. Prepare a batch of 5 records
+    .repeat(5)
+    // 2. Link all records to a specific Account
+    .setFieldValue(Contact.AccountId, myAccountId)
+    // 3. Dynamic naming: User 1, User 2, etc.
+    .setFieldValue(Contact.LastName, 'User {counter}')
+    // 4. Set 'Primary' as the default for all
+    .setFieldValue(Contact.Level__c, 'Primary')
+    // 5. Override ONLY the first record (Index 0)
+    .setFieldValue(Contact.Level__c, 'Secondary', new List<String>{ '0' })
+    // 6. Insert to Database and return the list
+    .save();
 ```
 
 #### 📖 Looking for more samples?

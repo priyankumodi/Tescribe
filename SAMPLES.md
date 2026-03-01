@@ -1,3 +1,16 @@
+> [!NOTE]
+> **Note on Environment Compatibility**
+>
+> The examples provided in this document are designed to demonstrate the various features and logical possibilities of the Tescribe library. While these samples follow standard Apex and Salesforce patterns, please note that specific code snippets may require adjustment to function within your unique Salesforce environment.
+>
+> Success depends on factors such as:
+>
+> - **Object & Field Availability**: Ensure the SObjects and custom fields referenced (e.g., `EmployeeID__c`) exist in your org.
+> - **Permissions**: Your user profile must have the necessary FLS (Field Level Security) and CRUD permissions for the objects being generated.
+> - **Namespace**: If using Tescribe within a managed package, remember to append the appropriate namespace prefix to custom fields and metadata.
+> - **Validation Rules & Triggers**: Existing automation in your org may require additional fields to be set to satisfy required field constraints or validation logic.
+> - **Field Integrity**: Tescribe respects Salesforce metadata. If a field is defined as a Formula (Calculated) or is Read-Only, the library will automatically skip mapping it to prevent DML errors.
+
 # 1. Basic Generation: save() vs build()
 
 Tescribe gives you full control over the record lifecycle. Use save() for Integration Tests (Database) and build() for Lightning Fast Unit Tests (In-Memory).
@@ -81,11 +94,11 @@ List<Opportunity> opps =
     // 1. Set Global Default
     .setFieldValue(Opportunity.StageName, 'Prospecting')
     // 2. Target Index 0
-    .setFieldValue(Opportunity.StageName, 'Closed Won', '0','4')
+    .setFieldValue(Opportunity.StageName, 'Closed Won', new List<String>{ '0','4' })
     // 3. Target specific indices
-    .setFieldValue(Opportunity.Amount, 1000, '0','2')
+    .setFieldValue(Opportunity.Amount, 1000, new List<String>{ '0','2' })
     // 4. Target inclusive range
-    .setFieldValue(Opportunity.Amount, 5000, '3-5')
+    .setFieldValue(Opportunity.Amount, 5000, new List<String>{ '3-5' })
     .save();
 ```
 
@@ -148,9 +161,9 @@ List<Account> accs = (List<Account>) Tescribe.builder('Standard_Account')
     // Add a field not in the template
     .setFieldValue('Description', 'Created from code')
     // Override a specific template value
-    .setFieldValue('Industry', 'Education', '2','5')
+    .setFieldValue('Industry', 'Education', new List<String>{ '2','5' })
     // Override a specific template value
-    .setFieldValue('Rating', 'Cool', '1', '3-5')
+    .setFieldValue('Rating', 'Cool', new List<String>{ '1', '3-5' })
     .save();
 ```
 
